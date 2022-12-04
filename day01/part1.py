@@ -1,7 +1,7 @@
 def solution():
     best = 0
     curr = 0
-    with open("day1/input.txt") as f:
+    with open("day01/input.txt") as f:
         for line in f:
             clean_line = line.strip()
             if not clean_line:
