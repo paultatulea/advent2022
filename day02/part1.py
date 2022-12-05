@@ -1,5 +1,8 @@
 from enum import Enum
-import io
+from pathlib import Path
+import pytest
+
+PATH = Path(__file__).parent.resolve() / "input.txt"
 
 
 class Choice(str, Enum):
@@ -47,29 +50,41 @@ def get_result(choice: Choice, other: Choice) -> Outcome:
         return Outcome.WIN if other == Choice.PAPER else Outcome.LOSE
 
 
-f = io.StringIO(
-    """A Y
+INPUT_S = """\
+A Y
 B X
-C Z
-"""
+C Z"""
+EXPECTED = 15
+
+
+@pytest.mark.parametrize(
+    ("input_s", "expected"),
+    ((INPUT_S, EXPECTED),),
 )
+def test_case(input_s: str, expected: int) -> None:
+    assert solution(input_s) == expected
 
 
-def solution():
-    path = "day02/input.txt"
+def solution(s: str) -> int:
     score = 0
-    with open(path) as f:
-        for line in f:
-            opp, me = line.split()
-            opp = Choice(choice_lookup[opp])
-            me = Choice(choice_lookup[me])
-            choice_score = point_choice_lookup[me]
-            result = get_result(me, opp)
-            result_score = point_outcome_lookup[result]
-            round_score = choice_score + result_score
-            print(f"{opp=} {me=} {round_score=}")
-            score += round_score
-    print(f"{score=}")
+    for line in s.splitlines():
+        opp, me = line.split()
+        opp = Choice(choice_lookup[opp])
+        me = Choice(choice_lookup[me])
+        choice_score = point_choice_lookup[me]
+        result = get_result(me, opp)
+        result_score = point_outcome_lookup[result]
+        round_score = choice_score + result_score
+        print(f"{opp=} {me=} {round_score=}")
+        score += round_score
+    return score
 
 
-solution()
+def main() -> None:
+    with open(PATH) as f:
+        s = f.read()
+    print(solution(s))
+
+
+if __name__ == "__main__":
+    main()
